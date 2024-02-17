@@ -171,26 +171,6 @@ describe(getExpoConfigSourcesAsync, () => {
     expect(expoConfig.name).toEqual(appJson.expo.name);
   });
 
-  it('should not contain runtimeVersion in expo config', async () => {
-    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
-    vol.writeFileSync(
-      '/app/app.config.js',
-      `\
-export default ({ config }) => {
-  config.runtimeVersion = '1.0.0';
-  return config;
-};`
-    );
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
-    const expoConfigSource = sources.find<HashSourceContents>(
-      (source): source is HashSourceContents =>
-        source.type === 'contents' && source.id === 'expoConfig'
-    );
-    const expoConfig = JSON.parse(expoConfigSource?.contents?.toString() ?? 'null');
-    expect(expoConfig).not.toBeNull();
-    expect(expoConfig.runtimeVersion).toBeUndefined();
-  });
-
   it('should keep expo config contents in deterministic order', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
